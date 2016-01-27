@@ -23,6 +23,8 @@ public class TopBorder extends GameObject {
 
     public void draw(Canvas canvas) {
         try { canvas.drawBitmap(image,x,y,null);
-        } catch(Exception e){}
+        } catch(Exception e){
+            System.err.println("TopBorder:Draw() " + e.getMessage());
+        }
     }
 }

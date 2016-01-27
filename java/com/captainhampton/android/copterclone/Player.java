@@ -3,10 +3,10 @@ package com.captainhampton.android.copterclone;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-
 public class Player extends GameObject {
-    private Bitmap spritesheet;
+
     private int score;
+    private int best;
 
     private boolean up;
     private boolean playing;
@@ -19,14 +19,16 @@ public class Player extends GameObject {
         y = GamePanel.HEIGHT / 2;
         dy = 0;
         score = 0;
+        best = 0;
         height = h;
         width = w;
 
+        Bitmap sprite_sheet;
         Bitmap[] image = new Bitmap[numFrames];
-        spritesheet = res;
+        sprite_sheet = res;
 
         for (int i = 0; i < image.length; i++)
-            image[i] = Bitmap.createBitmap(spritesheet, i * width, 0, width, height);
+            image[i] = Bitmap.createBitmap(sprite_sheet, i * width, 0, width, height);
 
         animation.setFrames(image);
         animation.setDelay(10);
@@ -38,25 +40,32 @@ public class Player extends GameObject {
     }
 
     public void update() {
-        long elapsed = (System.nanoTime()-startTime)/1000000;
-        if(elapsed>100) {
+
+        final int top_border_max = 14;
+        final int bot_border_min = -14;
+
+        final double acceleration = 0.5;
+        final double deceleration = 1;
+
+        long elapsed = (System.nanoTime() - startTime)/1000000;
+        if(elapsed > 100) {
             score++;
             startTime = System.nanoTime();
         }
         animation.update();
 
         if(up)
-            dy -=1;
+            dy -= acceleration;
         else
-            dy +=1;
+            dy += acceleration;
 
+        if(dy > top_border_max)
+            dy = top_border_max;
 
-        if(dy>14)
-            dy = 14;
-        if(dy<-14)
-            dy = -14;
+        if(dy < bot_border_min)
+            dy = bot_border_min;
 
-        y += dy*2;
+        y += dy*deceleration;
 
     }
 
@@ -68,12 +77,20 @@ public class Player extends GameObject {
         return score;
     }
 
+    public int getBest() {
+        return best;
+    }
+
     public boolean getPlaying() {
         return playing;
     }
 
     public void setPlaying(boolean b) {
         playing = b;
+    }
+
+    public void setBest(int b) {
+        best = b;
     }
 
     public void resetDY() {
